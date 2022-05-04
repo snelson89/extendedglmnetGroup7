@@ -14,7 +14,9 @@ create.regr.data(n, p, ytype = "continuous")
 \item{ytype}{Determines whether to have a binary or continuous response variable. Defaults to "continuous"}
 }
 \description{
-This function returns a random
+This function creates a random data.frame with n observations of p parameters.
+You can choose whether or not the response variable y is binary or continuous.
+It returns a list with the data.frame as well as a vector of the true beta values used to create the data.
 }
 \examples{
 create.regr.data(100,4,ytype="continuous")

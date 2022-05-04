@@ -1,6 +1,8 @@
 #' A function for creating random regression data.
 #'
-#' This function returns a random
+#' This function creates a random data.frame with n observations of p parameters.
+#' You can choose whether or not the response variable y is binary or continuous.
+#' It returns a list with the data.frame as well as a vector of the true beta values used to create the data.
 #' @param n The number of observations in the random data set.
 #' @param p The number of parameters in the random data set. The function randomly chooses how many will be binary or continuous.
 #' @param ytype Determines whether to have a binary or continuous response variable. Defaults to "continuous"
@@ -16,7 +18,7 @@ create.regr.data <- function(n,p,ytype="continuous"){
 
   betas <- runif(p+1,-10,10)
   # set random means and random sampling probabilities for binomial
-  random.params <- c(runif(p.continuous,-100,100),runif(p.binary))
+  random.params <- c(runif(p.continuous,-10,10),runif(p.binary))
 
   X <- matrix(rep(NA,n*p),nrow=n,ncol=p)
   for(i in 1:p){
@@ -28,11 +30,12 @@ create.regr.data <- function(n,p,ytype="continuous"){
     }
   }
   if(ytype=="continuous"){
-    Y <- X %*% betas[2:(p+1)] + betas[1] + rnorm(nrow(X))
+    Y <- X %*% betas[2:(p+1)] + betas[1] + rnorm(nrow(X),0,200)
   }
   else if(ytype=="binary"){
-    Z <- X %*% betas[2:(p+1)] + betas[1] + rnorm(nrow(X))
-    pr <- 1/(1+exp(-Z))
+    Z <- X %*% betas[2:(p+1)] + betas[1] + rnorm(nrow(X),0,200)
+    #pr <- 1/(1+exp(-Z))
+    pr=exp(Z)/(1+exp(Z))
     Y <- rbinom(n,1,pr)
   }
   else{
@@ -44,3 +47,4 @@ create.regr.data <- function(n,p,ytype="continuous"){
   return(list(True_Betas=betas,
          Data=df))
 }
+

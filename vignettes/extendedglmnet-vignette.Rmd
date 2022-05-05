@@ -34,7 +34,7 @@ The `extendedglmnetGroup7` package also includes functions for doing basic linea
 
 Linear regression models a linear relation between a response variable and a set of predictor variables. These types of models take the form: $$y_i = \beta_0 + \beta_1x_{i1} + \cdots + \beta_px_{ip}+\epsilon$$ where $y_i$ is the $i$th response, $\beta_0,\beta_1,\cdots,\beta_p$ is a parameter vector where $\beta_0$ is the intercept and the remaining terms are coefficients for the various predictor variables, $x_{i1},\cdots,x_{ip}$ are observed values for the various parameters of the $i$th data point, and $\epsilon$ is random noise. Given a set of observations and responses, the goal of linear regression is to find the coefficients that minimize an error term (often the sum of squared errors.)
 
-A linear regression model can be fit using the function `extended.lm()`. This function is a wrapper for the base `lm()` function. Unlike the `lm()` function, `extended.lm()` takes two variables and does not require a formula. `X` is an $n\times p$ matrix where $n$ is the number of observations and $p$ is the number of predictors. `Y` is a vector of length $n$ response variables. The remainder of the input variables used with `lm()` are kept as their default values. For more information on `lm()` see the [package documentation](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm).
+A linear regression model can be fit using the function `extended.lm()`. This function is a wrapper for the base `lm()` function. Unlike the `lm()` function, `extended.lm()` takes two variables and does not require a formula. `X` is an $n\times p$ matrix where $n$ is the number of observations and $p$ is the number of predictors. `Y` is a vector of length $n$ continuous response values. The remainder of the input variables used with `lm()` are kept as their default values. For more information on `lm()` see the [package documentation](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm).
 
 
 ## Example ##
@@ -43,7 +43,7 @@ First we create some data.
 
 ```{r}
 n <- 1000
-B0 <- 40
+B0 <- 3
 B1 <- 5
 X1 <- rnorm(n)
 B2 <- -2
@@ -62,6 +62,33 @@ coef(fit)
 As expected, the fitted coefficients are close to the true coefficients `B0`, `B1`, and `B2`.
 
 # Logistic Regression
+
+Logistic regression is a type of generalized linear regression that models binary outcomes. Generalized linear regression models are characterized by a response distribution (binomial) and a link function which relates linear predictors and the mean of the response distribution. $$ E(X) = \mu = g^{-1}(X\beta) $$
+
+In regression, we want to explain a response variable $Y$ as a function of predictors $X$. For logistic regression with a binary response we need to restrict $Y$ to be between 0 and 1. This is accomplished with the following model: $$ E(Y) = \mu = \frac{\exp(X\beta)}{1+\exp(X\beta)} $$
+
+Finally, the linking function is the logit function which is defined as: $$ X\beta = \log(\frac{\mu}{1-\mu}) $$
+
+A logistic regression model can be fit using the function `extended.glm()`. This function is a wrapper for the base `glm()` function. Unlike the `glm()` function, `extended.glm()` takes two variables and does not require a formula. `X` is an $n\times p$ matrix where $n$ is the number of observations and $p$ is the number of predictors. `Y` is a vector of length $n$ binary response values. The function sets `family=binomial("logit")`. The remainder of the input variables used with `glm()` are kept as their default values. For more information on `glm()` see the [package documentation](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/glm).
+
+## Example ##
+
+We can use the same `X` and `B` values from the data created in the linear regression section. All we need to change is how `Y` is derived.
+
+```{r}
+Z <- B0 + B1*X1 + B2*X2
+pr=exp(Z)/(1+exp(Z))
+Y2 <- rbinom(n,1,pr)
+```
+
+Next, we can fit the model using `extended.glm()` and check to see the predicted coefficients.
+
+```{r}
+fit <- extended.glm(X,Y2)
+coef(fit)
+```
+
+As expected, the fitted coefficients are close to the true coefficients `B0`, `B1`, and `B2`.
 
 # Ridge Regression
 

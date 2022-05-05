@@ -6,12 +6,18 @@
 #' @param n The number of observations in the random data set.
 #' @param p The number of parameters in the random data set. The function randomly chooses how many will be binary or continuous.
 #' @param ytype Determines whether to have a binary or continuous response variable. Defaults to "continuous"
+#' @param include.categorical A boolean condition that determines whether or not to include categorical predictors. By default it is set to FALSE
 #' @export
 #' @examples
 #' create.regr.data(100,4,ytype="continuous")
 #' create.regr.data(100,4,ytype="binary")
 
 create.regr.data <- function(n,p,ytype="continuous",include.categorical=FALSE){
+
+  if(ytype != "continuous" & ytype != "binary"){
+    stop("ytype must be 'continuous' or 'binary'")
+  }
+
   if(include.categorical==TRUE){
     p.continuous <- round(p*runif(1))
   }
@@ -36,15 +42,11 @@ create.regr.data <- function(n,p,ytype="continuous",include.categorical=FALSE){
   }
   if(ytype=="continuous"){
     Y <- X %*% betas[2:(p+1)] + betas[1] + rnorm(nrow(X),0,200)
-  }
-  else if(ytype=="binary"){
+  } else if(ytype=="binary"){
     Z <- X %*% betas[2:(p+1)] + betas[1] + rnorm(nrow(X),0,200)
     #pr <- 1/(1+exp(-Z))
     pr=exp(Z)/(1+exp(Z))
     Y <- rbinom(n,1,pr)
-  }
-  else{
-    warning("ytype must be either continuous or binary")
   }
 
   df <- data.frame(cbind(X,Y))

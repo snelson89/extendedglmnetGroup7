@@ -12,6 +12,8 @@ create.regr.data(n, p, ytype = "continuous", include.categorical = FALSE)
 \item{p}{The number of parameters in the random data set. The function randomly chooses how many will be binary or continuous.}
 
 \item{ytype}{Determines whether to have a binary or continuous response variable. Defaults to "continuous"}
+
+\item{include.categorical}{A boolean condition that determines whether or not to include categorical predictors. By default it is set to FALSE}
 }
 \description{
 This function creates a random data.frame with n observations of p parameters.

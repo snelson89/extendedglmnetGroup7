@@ -209,3 +209,48 @@ paste("There are",nonzero.c,"nonzero coefficients")
 Here we see that the smaller q values also influence the number of nonzero coefficients.
 
 # Auxiliary functions and data
+
+## Gene Data ##
+
+One data set is included in the package. This is a leukemia gene data set taken from [http://www.ams.sunysb.edu/~pfkuan/Teaching/AMS597/Data/leukemiaDataSet.txt](http://www.ams.sunysb.edu/~pfkuan/Teaching/AMS597/Data/leukemiaDataSet.txt). This data set is useful for lasso regression because the number of predictors (72) is much larger than the number of observations (3571). The response variable is binary with the responses being `ALL` and `AML`.
+
+This data is saved as a `.rda` file and is named `dat`. It is loaded automatically with the package.
+
+## Random Data Generator ##
+
+The `extendedglmnetGroup7` package also includes a function `create.regr.data()` that automatically creates random regression data. This can be useful for testing to see how different types of data is evaluated with different types of regression. The following parameters are included:
+- `n` the number of desired observations
+- `p` the number of desired parameters
+- `ytype` whether or not the response variable should be binary or continuous. It defaults to `continuous`
+- `include.categorical` a boolean variable deciding whether or not to include categorical predictors
+
+It returns a list with the true beta values used in data creation (`True_Betas`) and the data itself (`Data`).
+
+### Example ###
+
+The following examples show different data generation types. 1) n > p, continuous response, no categorical predictors; 2) n < p, binary response, categorical predictors, n = p, continuous response, categorical predictors
+
+```{r}
+d1 <- create.regr.data(1000,2)$Data
+d2 <- create.regr.data(50,100,ytype="binary",include.categorical = TRUE)$Data
+d3 <- create.regr.data(100,100,include.categorical = TRUE)$Data
+
+```
+
+## Train/Test Split ##
+
+The `extendedglmnetGroup7` package also includes a function `train_test_split()` that automatically splits a data set into a training and testing set. This can be useful for testing to see how well a regression model generalizes. The following parameters are included:
+- `data` a data frame our matrix of both predictor values and response
+- `test_size` a real value in (0,1) that determines the size of the test set. Default is 0.2.
+
+It returns a list of `Train_data` and `Test_data`.
+
+### Example ###
+
+```{r}
+df <- create.regr.data(100,4)$Data
+```
+
+
+
+

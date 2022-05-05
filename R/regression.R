@@ -51,7 +51,16 @@ extended.glm <- function(X,Y){
 #' @param ytype description as to whether or not the response variable y is binary or continuous. Defaults to 'continuous'.
 #' @export
 #' @examples
-#' extended.ridge(X,Y)
+#' n <- 200      
+#' p <- 500
+#' s <- 10
+#' beta <- rep(0, p)
+#' beta[1:s] <- runif(s, 1/3, 1)
+#' x <- rmvnorm(n = n, mean = rep(0, p), method = "svd")
+#' signal <- sqrt(mean((x %*% beta)^2))
+#' sigma <- as.numeric(signal / sqrt(10))  # SNR=10
+#' y <- x %*% beta + rnorm(n)
+#' extended.ridge(x,y)
 
 extended.ridge <- function(X,Y,lambda=NULL,ytype="continuous"){
   #data <- as.data.frame(cbind(X,y=Y))

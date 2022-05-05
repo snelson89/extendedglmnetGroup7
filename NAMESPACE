@@ -2,5 +2,6 @@
 
 export(create.regr.data)
 export(extended.glm)
+export(extended.lasso)
 export(extended.lm)
 export(extended.ridge)

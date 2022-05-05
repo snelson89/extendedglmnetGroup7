@@ -4,7 +4,7 @@
 \alias{create.regr.data}
 \title{A function for creating random regression data.}
 \usage{
-create.regr.data(n, p, ytype = "continuous")
+create.regr.data(n, p, ytype = "continuous", include.categorical = FALSE)
 }
 \arguments{
 \item{n}{The number of observations in the random data set.}

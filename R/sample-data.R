@@ -11,10 +11,15 @@
 #' create.regr.data(100,4,ytype="continuous")
 #' create.regr.data(100,4,ytype="binary")
 
-create.regr.data <- function(n,p,ytype="continuous"){
-  p.continuous <- round(p*runif(1))
+create.regr.data <- function(n,p,ytype="continuous",include.categorical=FALSE){
+  if(include.categorical==TRUE){
+    p.continuous <- round(p*runif(1))
+  }
+  else{
+    p.continuous <- p
+  }
+
   p.binary <- p-p.continuous
-  noise <- runif(1,0,10)
 
   betas <- runif(p+1,-10,10)
   # set random means and random sampling probabilities for binomial
@@ -44,6 +49,10 @@ create.regr.data <- function(n,p,ytype="continuous"){
 
   df <- data.frame(cbind(X,Y))
   names(df)[p+1] <- "y"
+  # make binary predictors factors
+  if(include.categorical == TRUE){
+    df[(p.continuous+1):p] <- lapply(df[(p.continuous+1):p] , factor)
+  }
   return(list(True_Betas=betas,
          Data=df))
 }

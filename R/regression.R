@@ -65,6 +65,14 @@ extended.glm <- function(X,Y){
 extended.ridge <- function(X,Y,lambda=NULL,ytype="continuous"){
   #data <- as.data.frame(cbind(X,y=Y))
 
+  if(ytype != "continuous" & ytype != "binary"){
+    stop("ytype must be 'continuous' or 'binary'")
+  } else if(is.numeric(lambda)){
+    if(lambda <= 0){
+      stop("lambda must be greater than 0")
+    }
+  }
+
   if(ytype=="continuous"){
     fam <- "gaussian"
   } else if(ytype=="binary"){
@@ -104,6 +112,15 @@ extended.ridge <- function(X,Y,lambda=NULL,ytype="continuous"){
 #' extended.lasso(x,y)
 
 extended.lasso <- function(X,Y,lambda=NULL,ytype="continuous"){
+
+  if(ytype != "continuous" & ytype != "binary"){
+    stop("ytype must be 'continuous' or 'binary'")
+  } else if(is.numeric(lambda)){
+    if(lambda <= 0){
+      stop("lambda must be greater than 0")
+    }
+  }
+
   data <- as.data.frame(cbind(X,y=Y))
 
   if(ytype=="continuous"){
@@ -125,7 +142,31 @@ extended.lasso <- function(X,Y,lambda=NULL,ytype="continuous"){
   return(fit)
 }
 
+#' An implementation of random lasso regression.
+#'
+#' This function takes a matrix of candidate predictors X and a vector of response variables Y and performs random lasso regression.
+#' @param X an n by p matrix of candidate predictors.
+#' @param Y an n by 1 vector of responses
+#' @param lambda an optional lambda value. If no lambda is provided, an optimal lambda is automatically determined using glmnet::cv.glmnet(alpha=1).
+#' @param B the number of Bootstrap samples. Default is 200.
+#' @param q1 the number of random predictors to use in step 1 of the algorithm. Default is length(Y). Must be less than or equal to this value.
+#' @param q2 the number of random predictors to use in step 2 of the algorithm. Default is length(Y). Must be less than or equal to this value.
+#' @param ytype description as to whether or not the response variable y is binary or continuous. Defaults to 'continuous'.
+#' @export
+#' @examples
+#' extended.randomlasso(X,Y)
+
 extended.randomlasso <- function(X,Y,lambda=NULL,B=200,q1=length(Y),q2=length(Y),ytype="continuous"){
+
+  if(ytype != "continuous" & ytype != "binary"){
+    stop("ytype must be 'continuous' or 'binary'")
+  } else if(is.numeric(lambda)){
+    if(lambda <= 0){
+      stop("lambda must be greater than 0")
+    }
+  } else if(q1 > length(Y) | q2 > length(Y)){
+    stop("q values must both be less than or equal to length(Y)")
+  }
 
   # Step 1a
 
@@ -159,7 +200,7 @@ extended.randomlasso <- function(X,Y,lambda=NULL,B=200,q1=length(Y),q2=length(Y)
 
     if(is.null(lambda)){
       # Use cross-validation to find lambda
-      cv.lasso <- glmnet::cv.glmnet(X1, Y1, alpha=1, nfolds=5, family=fam,intercept=FALSE)
+      cv.lasso <- glmnet::cv.glmnet(data.matrix(X1), Y1, alpha=1, nfolds=5, family=fam,intercept=FALSE)
       l <- cv.lasso$lambda.min
     }
     else{
@@ -208,7 +249,7 @@ extended.randomlasso <- function(X,Y,lambda=NULL,B=200,q1=length(Y),q2=length(Y)
 
     if(is.null(lambda)){
       # Use cross-validation to find lambda
-      cv.lasso2 <- glmnet::cv.glmnet(X2, Y2, alpha=1, nfolds=5, family=fam,intercept=FALSE)
+      cv.lasso2 <- glmnet::cv.glmnet(data.matrix(X2), Y2, alpha=1, nfolds=5, family=fam,intercept=FALSE)
       l2 <- cv.lasso2$lambda.min
     }
     else{
@@ -232,7 +273,7 @@ extended.randomlasso <- function(X,Y,lambda=NULL,B=200,q1=length(Y),q2=length(Y)
 
   Final.Betas <- rowSums(B.estimate2)/B
 
-  return(Final.Betas)
+  return(list(B.coefs=Final.Betas))
 }
 
 

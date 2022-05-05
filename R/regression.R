@@ -5,7 +5,11 @@
 #' @param Y an n by 1 vector of responses
 #' @export
 #' @examples
-#' extended.lm(X,Y)
+#' require(glmnet)
+#' data("QuickStartExample")
+#' x <- QuickStartExample$x
+#' y <- QuickStartExample$y
+#' extended.lm(x,y)
 
 extended.lm <- function(X,Y){
   data <- as.data.frame(cbind(X,y=Y))

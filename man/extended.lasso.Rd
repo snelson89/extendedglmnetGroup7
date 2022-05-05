@@ -20,5 +20,14 @@ automatically determined using glmnet::cv.glmnet(alpha=1).}
 This function takes a matrix of candidate predictors X and a vector of response variables Y and performs lasso regression.
 }
 \examples{
-extended.lasso(X,Y)
+n <- 200      
+p <- 500
+s <- 10
+beta <- rep(0, p)
+beta[1:s] <- runif(s, 1/3, 1)
+x <- rmvnorm(n = n, mean = rep(0, p), method = "svd")
+signal <- sqrt(mean((x \%*\% beta)^2))
+sigma <- as.numeric(signal / sqrt(10))  # SNR=10
+y <- x \%*\% beta + rnorm(n)
+extended.lasso(x,y)
 }

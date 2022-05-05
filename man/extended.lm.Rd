@@ -15,5 +15,9 @@ extended.lm(X, Y)
 This function takes a matrix of candidate predictors X and a vector of response variables Y.
 }
 \examples{
-extended.lm(X,Y)
+require(glmnet)
+data("QuickStartExample")
+x <- QuickStartExample$x
+y <- QuickStartExample$y
+extended.lm(x,y)
 }

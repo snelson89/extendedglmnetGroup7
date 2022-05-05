@@ -15,5 +15,16 @@ extended.glm(X, Y)
 This function takes a matrix of candidate predictors X and a vector of binary response variables Y. .
 }
 \examples{
-extended.lm(X,Y)
+n <- 1000
+B0 <- 3
+B1 <- 5
+X1 <- rnorm(n)
+B2 <- -2
+X2 <- rnorm(n)
+X <- as.matrix(cbind(X1=X1,X2=X2))
+Z <- B0 + B1*X1 + B2*X2
+pr=exp(Z)/(1+exp(Z))
+Y <- rbinom(n,1,pr)
+fit <- extended.glm(X,Y2)
+coef(fit)
 }

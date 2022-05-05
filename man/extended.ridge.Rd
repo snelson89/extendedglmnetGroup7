@@ -20,5 +20,14 @@ automatically determined using glmnet::cv.glmnet(alpha=0).}
 This function takes a matrix of candidate predictors X and a vector of response variables Y and performs ridge regression.
 }
 \examples{
-extended.ridge(X,Y)
+n <- 200      
+p <- 500
+s <- 10
+beta <- rep(0, p)
+beta[1:s] <- runif(s, 1/3, 1)
+x <- rmvnorm(n = n, mean = rep(0, p), method = "svd")
+signal <- sqrt(mean((x \%*\% beta)^2))
+sigma <- as.numeric(signal / sqrt(10))  # SNR=10
+y <- x \%*\% beta + rnorm(n)
+extended.ridge(x,y)
 }

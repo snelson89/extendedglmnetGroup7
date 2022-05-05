@@ -23,7 +23,18 @@ extended.lm <- function(X,Y){
 #' @param Y an n by 1 vector of binary responses
 #' @export
 #' @examples
-#' extended.lm(X,Y)
+#' n <- 1000
+#' B0 <- 3
+#' B1 <- 5
+#' X1 <- rnorm(n)
+#' B2 <- -2
+#' X2 <- rnorm(n)
+#' X <- as.matrix(cbind(X1=X1,X2=X2))
+#' Z <- B0 + B1*X1 + B2*X2
+#' pr=exp(Z)/(1+exp(Z))
+#' Y <- rbinom(n,1,pr)
+#' fit <- extended.glm(X,Y2)
+#' coef(fit)
 
 extended.glm <- function(X,Y){
   data <- as.data.frame(cbind(X,y=Y))
@@ -72,7 +83,16 @@ extended.ridge <- function(X,Y,lambda=NULL,ytype="continuous"){
 #' @param ytype description as to whether or not the response variable y is binary or continuous. Defaults to 'continuous'.
 #' @export
 #' @examples
-#' extended.lasso(X,Y)
+#' n <- 200      
+#' p <- 500
+#' s <- 10
+#' beta <- rep(0, p)
+#' beta[1:s] <- runif(s, 1/3, 1)
+#' x <- rmvnorm(n = n, mean = rep(0, p), method = "svd")
+#' signal <- sqrt(mean((x %*% beta)^2))
+#' sigma <- as.numeric(signal / sqrt(10))  # SNR=10
+#' y <- x %*% beta + rnorm(n)
+#' extended.lasso(x,y)
 
 extended.lasso <- function(X,Y,lambda=NULL,ytype="continuous"){
   data <- as.data.frame(cbind(X,y=Y))

@@ -190,7 +190,7 @@ extended.randomlasso <- function(X,Y,lambda=NULL,B=200,q1=length(Y),q2=length(Y)
     m2 <- glmnet::glmnet(X2,Y2,family=fam,alpha=1,lambda=l2,intercept=FALSE)
 
     # assign coefficients to their correct spot in matrix
-    # Logic = cv variable is sorted, so coef(m) will match that ordering (+1 due to interept)
+    # Logic = cand variable is sorted, so coef(m) will match that ordering (+1 due to interept)
     for(j in 1:q2){
       B.estimate2[cand[j],i] <- coef(m2)[j+2]
     }

@@ -1,0 +1,73 @@
+---
+title: "extendedglmnet"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(extendedglmnetGroup7)
+```
+
+# Introduction
+
+The `extendedglmnetGroup7` package was written by Victoria Hamilton and Scott Nelson as part of a final project for AMS 597 at Stony Brook University in Spring 2022. The primary purpose of the package is to extend the `glmnet` package to inlude random lasso as described in Wang, S., Nan, B., Rosset, S., & Zhu, J. (2011). Random lasso. *The Annals of Applied Statistics*, 5(1), 468-485.
+
+The `extendedglmnetGroup7` package also includes functions for doing basic linear and logistic regression which are not included in the `glmnet` package, as well as functions that by default perform ridge and lasso regression. In total, the `extendedglmnetGroup7` package can fit the following types of models:
+
+- Linear Regression
+- Logistic Regression
+- Ridge Regression (for binary or continuous response variable)
+- Lasso Regression (for binary or continuous response variable)
+- Random Lasso (for binary or continuous response variable)
+
+# Linear Regression
+
+Linear regression models a linear relation between a response variable and a set of predictor variables. These types of models take the form: $$y_i = \beta_0 + \beta_1x_{i1} + \cdots + \beta_px_{ip}+\epsilon$$ where $y_i$ is the $i$th response, $\beta_0,\beta_1,\cdots,\beta_p$ is a parameter vector where $\beta_0$ is the intercept and the remaining terms are coefficients for the various predictor variables, $x_{i1},\cdots,x_{ip}$ are observed values for the various parameters of the $i$th data point, and $\epsilon$ is random noise. Given a set of observations and responses, the goal of linear regression is to find the coefficients that minimize an error term (often the sum of squared errors.)
+
+A linear regression model can be fit using the function `extended.lm()`. This function is a wrapper for the base `lm()` function. Unlike the `lm()` function, `extended.lm()` takes two variables and does not require a formula. `X` is an $n\times p$ matrix where $n$ is the number of observations and $p$ is the number of predictors. `Y` is a vector of length $n$ response variables. The remainder of the input variables used with `lm()` are kept as their default values. For more information on `lm()` see the [package documentation](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm).
+
+
+## Example ##
+
+First we create some data. 
+
+```{r}
+n <- 1000
+B0 <- 40
+B1 <- 5
+X1 <- rnorm(n)
+B2 <- -2
+X2 <- rnorm(n)
+Y <- B0 + B1*X1 + B2*X2 + rnorm(n,0,10)
+X <- as.matrix(cbind(X1=X1,X2=X2))
+```
+
+Next, we can fit the model using `extended.lm()` and check to see the predicted coefficients.
+
+```{r}
+fit <- extended.lm(X,Y)
+coef(fit)
+```
+
+As expected, the fitted coefficients are close to the true coefficients `B0`, `B1`, and `B2`.
+
+# Logistic Regression
+
+# Ridge Regression
+
+# Lasso Regression
+
+# Random Lasso Regression
+
+
+

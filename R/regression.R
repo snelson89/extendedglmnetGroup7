@@ -39,7 +39,7 @@ extended.glm <- function(X,Y){
 #' extended.ridge(X,Y)
 
 extended.ridge <- function(X,Y,lambda=NULL,ytype="continuous"){
-  data <- as.data.frame(cbind(X,y=Y))
+  #data <- as.data.frame(cbind(X,y=Y))
 
   if(ytype=="continuous"){
     fam <- "gaussian"
@@ -48,10 +48,9 @@ extended.ridge <- function(X,Y,lambda=NULL,ytype="continuous"){
   }
 
   if(is.null(lambda)){
-    cv.lasso <- glmnet::cv.glmnet(X, Y, alpha=0, nfolds=5, family=fam)
+    cv.lasso <- glmnet::cv.glmnet(data.matrix(X), Y, alpha=0, nfolds=5, family=fam)
     l = cv.lasso$lambda.min
-  }
-  else{
+  }else{
     l = lambda
   }
 
@@ -81,7 +80,7 @@ extended.lasso <- function(X,Y,lambda=NULL,ytype="continuous"){
   }
 
   if(is.null(lambda)){
-    cv.lasso <- glmnet::cv.glmnet(X, Y, alpha=1, nfolds=5, family=fam)
+    cv.lasso <- glmnet::cv.glmnet(data.matrix(X), Y, alpha=1, nfolds=5, family=fam)
     l = cv.lasso$lambda.min
   }
   else{

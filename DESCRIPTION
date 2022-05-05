@@ -2,8 +2,14 @@ Package: extendedglmnetGroup7
 Title: Extension to glmnet package
 Version: 1.2.3
 Authors@R: 
-    c(person("Victoria", "Hamilton"),
-      person("Scott", "Nelson")
+    c(person(given = "Victoria",
+           family = "Hamilton",
+           role = "aut",
+           email = "victoria.hamilton@stonybrook.edu"),
+    person(given = "Scott",
+           family = "James",
+           role = c("aut","cre"),
+           email = "scott.nelson@stonybrook.edu"))
 Description: What the package does (one paragraph).
 License: use_mit_license()
 Encoding: UTF-8

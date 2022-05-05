@@ -97,20 +97,77 @@ Ridge regression extends this by adding a non-negative tuning parameter $\lambda
 
 A ridge regression model can be fit using the function `extended.ridge()`. This function is a wrapper for the function `glmnet::glmnet()` with the argument `alpha=0` hard coded in. The `alpha` parameter for `glmnet::glmnet()` indicates the type of penalty to be used in the model. `0` is the ridge penalty. Like `extended.lm()` and `extended.glm()`, `extended.ridge()` takes separate inputs for the predictors and responses. `X` is an $n\times p$ matrix where $n$ is the number of observations and $p$ is the number of predictors. `Y` is a vector of length $n$ of either binary or continuous response values.
 
-`extended.ridge()` also can take a user provided `lambda` value. By default this variable is set to `NULL`. If a `lambda` value is not provided, `extended.ridge()` automatically determines a value using ``glmnet::cv.glmnet(alpha=0,nfolds=5)`. The final argument to `extended.ridge()` is `ytype`. The possible forms of this argument are `"continuous"` and `"binary"`. The default argument is `continuous`. 
+`extended.ridge()` also can take a user provided `lambda` value. By default this variable is set to `NULL`. If a `lambda` value is not provided, `extended.ridge()` automatically determines a value using ``glmnet::cv.glmnet(alpha=0,nfolds=5)`. This is the suggested method for users. The final argument to `extended.ridge()` is `ytype`. This indicates whether or not the response variable is continuous or binary. The possible forms of this argument are `"continuous"` and `"binary"`. The default argument is `continuous`. These control the `family` argument of the `glmnet::glmnet()` function. If `ytype="continuous"` then `family="gaussian"`. If `ytype="binary"` then `family="binomial"`. All other `glmnet::glmnet()` arguments are kept as their default values. For mor information on `glmnet::glmnet()` see the [package documentation](https://www.rdocumentation.org/packages/glmnet/versions/4.1-4/topics/glmnet) or [vignette](https://glmnet.stanford.edu/articles/glmnet.html).
 
 ## Example ##
 
-For this example we will use the leukemia gene dataset from [http://www.ams.sunysb.edu/~pfkuan/Teaching/AMS597/Data/leukemiaDataSet.txt](http://www.ams.sunysb.edu/~pfkuan/Teaching/AMS597/Data/leukemiaDataSet.txt). This is saved as a part of the `extendedglmGroup7` package as `dat`.
+For this example we will use the leukemia gene data set from [http://www.ams.sunysb.edu/~pfkuan/Teaching/AMS597/Data/leukemiaDataSet.txt](http://www.ams.sunysb.edu/~pfkuan/Teaching/AMS597/Data/leukemiaDataSet.txt). This is saved as a part of the `extendedglmGroup7` package as `dat`. This data contains 72 binary observations and 3571 predictors. 
 
 ```{r}
+X <- dat[,2:ncol(dat)]
+Y <- dat[,1]
 
+fit <- extended.ridge(X,Y,ytype="binary")
+coef(fit)[1:21]
 ```
 
+We can look at the intercept and the next 20 coefficients and see that they are all small, but nonzero. 
+
+Let's use the function `create.regr.data()` for a second example. We will make the data set the same size as the gene data set above. This time, we will also provide our own lambda value.
+
+```{r}
+dd <- create.regr.data(72,3751)$Data
+X2 <- dd[,1:(ncol(dd)-1)]
+Y2 <- dd[,c(ncol(dd))]
+
+fit <- extended.ridge(X2,Y2,lambda=100,ytype="continuous")
+coef(fit)[1:21]
+```
+
+We once again look at the intercept and the next 20 coefficients and see that many are small, but nonzero. 
 
 # Lasso Regression
 
+Lasso regression is similar to ridge regression. The only difference is how the penalty term is calculated. In ridge regression, $\lambda$ is multiplied by the square of each $\beta$ coefficient while with lasso regression, $\lambda$ is multiplied by the absolute value of each $\beta$ coefficient during the minimization process. Therefore, lasso regression minimizes: $$RSS + \lambda\sum_{j=1}^p|\beta_j|$$ This causes the coefficients to shrink *exactly* to zero. Lasso regression can therefore be used as a type of predictor selection process. 
+
+A lasso regression model can be fit using the function `extended.lasso()`. This function is a wrapper for the function `glmnet::glmnet()` with the argument `alpha=1` hard coded in. The `alpha` parameter for `glmnet::glmnet()` indicates the type of penalty to be used in the model. `1` is the lasso penalty. Like `extended.lm()` and `extended.glm()`, `extended.lasso()` takes separate inputs for the predictors and responses. `X` is an $n\times p$ matrix where $n$ is the number of observations and $p$ is the number of predictors. `Y` is a vector of length $n$ of either binary or continuous response values.
+
+`extended.lasso()` also can take a user provided `lambda` value. By default this variable is set to `NULL`. If a `lambda` value is not provided, `extended.ridge()` automatically determines a value using ``glmnet::cv.glmnet(alpha=1,nfolds=5)`. This is the suggested method for users. The final argument to `extended.lassoe()` is `ytype`. This indicates whether or not the response variable is continuous or binary. The possible forms of this argument are `"continuous"` and `"binary"`. The default argument is `continuous`. These control the `family` argument of the `glmnet::glmnet()` function. If `ytype="continuous"` then `family="gaussian"`. If `ytype="binary"` then `family="binomial"`. All other `glmnet::glmnet()` arguments are kept as their default values. For mor information on `glmnet::glmnet()` see the [package documentation](https://www.rdocumentation.org/packages/glmnet/versions/4.1-4/topics/glmnet) or [vignette](https://glmnet.stanford.edu/articles/glmnet.html).
+
+## Example ##
+
+For this example we will use the leukemia gene data set from [http://www.ams.sunysb.edu/~pfkuan/Teaching/AMS597/Data/leukemiaDataSet.txt](http://www.ams.sunysb.edu/~pfkuan/Teaching/AMS597/Data/leukemiaDataSet.txt). This is saved as a part of the `extendedglmGroup7` package as `dat`. This data contains 72 binary observations and 3571 predictors. 
+
+```{r, message=FALSE}
+X <- dat[,2:ncol(dat)]
+Y <- dat[,1]
+
+fit <- extended.lasso(X,Y,ytype="binary")
+nonzero.c <- length(coef(fit)[coef(fit) != 0])
+paste("There are",nonzero.c-1,"zonzero coefficients")
+```
+
+We can look to see how many coefficients are nonzero. Notice that with this method we *drastically* reduce the number of predictors that affect the outcome. 
+
+Let's use the function `create.regr.data()` for a second example. We will make the data set the same size as the gene data set above. This time, we will also provide our own lambda value.
+
+```{r, message=FALSE}
+dd <- create.regr.data(72,3751)$Data
+X2 <- dd[,1:(ncol(dd)-1)]
+Y2 <- dd[,c(ncol(dd))]
+
+fit <- extended.lasso(X2,Y2,lambda=100,ytype="continuous")
+nonzero.c <- length(coef(fit)[coef(fit) != 0])
+paste("There are",nonzero.c-1,"zonzero coefficients")
+```
+
+We once again see that with this method we *drastically* reduce the number of predictors that affect the outcome.. 
+
 # Random Lasso Regression
+
+Random lasso is an extension of lasso regression. With random lasso, there are two steps. The first step performs lasso regression on a randomly selected group of predictors of Bootstrap samples. This is done to create an importance measure for each predictor. In step two, lasso regression is once again performed on a randomly selected group of predictors, but this time the probability of a predictor being chosen is weighted by its importance measure in step one.
+
+`extendedglmnetGroup7` has a custom implementation of random lasso regression based on the algorithm in [Wang et al. (2012)](https://www.ncbi.nlm.nih.gov/pmc/articles/pmc3445423/). The implementation of the algorithm uses `glmnet::glmnet(alpha=1)` for the lasso regression. The algorithm assumes numerical predictors that have been mean centered and therefore fits an intercept-free model. By default `glmnet::glmnet()` centers the data with the argument `standardize=TRUE`. An extra argument `intercept=FALSE` was included in the implementation of the algortihm to ensure that it fit an intercept-free model.
 
 
 

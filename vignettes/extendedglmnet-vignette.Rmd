@@ -144,7 +144,7 @@ Y <- dat[,1]
 
 fit <- extended.lasso(X,Y,ytype="binary")
 nonzero.c <- length(coef(fit)[coef(fit) != 0])
-paste("There are",nonzero.c-1,"zonzero coefficients")
+paste("There are",nonzero.c-1,"nonzero coefficients")
 ```
 
 We can look to see how many coefficients are nonzero. Notice that with this method we *drastically* reduce the number of predictors that affect the outcome. 
@@ -158,16 +158,54 @@ Y2 <- dd[,c(ncol(dd))]
 
 fit <- extended.lasso(X2,Y2,lambda=100,ytype="continuous")
 nonzero.c <- length(coef(fit)[coef(fit) != 0])
-paste("There are",nonzero.c-1,"zonzero coefficients")
+paste("There are",nonzero.c-1,"nonzero coefficients")
 ```
 
 We once again see that with this method we *drastically* reduce the number of predictors that affect the outcome.. 
 
 # Random Lasso Regression
 
-Random lasso is an extension of lasso regression. With random lasso, there are two steps. The first step performs lasso regression on a randomly selected group of predictors of Bootstrap samples. This is done to create an importance measure for each predictor. In step two, lasso regression is once again performed on a randomly selected group of predictors, but this time the probability of a predictor being chosen is weighted by its importance measure in step one.
+Random lasso is an extension of lasso regression. With random lasso, there are two steps. The first step performs lasso regression on a randomly selected group of predictors of Bootstrap samples. This is done to create an importance measure for each predictor. In step two, lasso regression is once again performed on a randomly selected group of predictors, but this time the probability of a predictor being chosen is weighted by its importance measure in step one. In regular lasso, if two or more predictors are heavily correlated, only one is chosen. This is less likely to happen with random lasso.
 
-`extendedglmnetGroup7` has a custom implementation of random lasso regression based on the algorithm in [Wang et al. (2012)](https://www.ncbi.nlm.nih.gov/pmc/articles/pmc3445423/). The implementation of the algorithm uses `glmnet::glmnet(alpha=1)` for the lasso regression. The algorithm assumes numerical predictors that have been mean centered and therefore fits an intercept-free model. By default `glmnet::glmnet()` centers the data with the argument `standardize=TRUE`. An extra argument `intercept=FALSE` was included in the implementation of the algortihm to ensure that it fit an intercept-free model.
+`extendedglmnetGroup7` has a custom implementation of random lasso regression based on the algorithm in [Wang et al. (2012)](https://www.ncbi.nlm.nih.gov/pmc/articles/pmc3445423/). The implementation of the algorithm uses `glmnet::glmnet(alpha=1)` for the lasso regression. The algorithm assumes numerical predictors that have been mean centered and therefore fits an intercept-free model. By default `glmnet::glmnet()` centers the data with the argument `standardize=TRUE`. An extra argument `intercept=FALSE` was included in the implementation of the algorithm to ensure that it fit an intercept-free model.
+
+Random lasso is implemented with the function `extended.randomlasso()`. The following are the arguments that the function takes.
+- `X` is an $n\times p$ matrix where $n$ is the number of observations and $p$ is the number of predictors. 
+- `Y` is a vector of length $n$ of either binary or continuous response values.
+- `lambda`is a non-negative tuning parameter. The user may provide their own value, but it defaults to `NULL`. If the user does not provide their own `lambda` term, `glmnet::cvglmnet` is used to find the best term using cross-validation. 
+- `B` is the number of bootstrap samples to use in steps 1 and 2 of the algorithm. It defaults to `200` since Wang et al. (p. 474) found this number to be sufficient for their purposes. 
+- `q1` is the number of random predictors to sample in step 1 of the algorithm. It defaults to `length(Y)` which is equal to the number of observations $n$. This is the largest number that `q1` can be. If the user provides a value larger than $n$, the function returs an error.
+- `q2` is the number of random predictors to sample in step 2 of the algorithm. It defaults to `length(Y)` which is equal to the number of observations $n$. This is the largest number that `q1` can be. If the user provides a value larger than $n$, the function returns an error. `q1` does not need to equal `q2`.
+- `ytype` defines the type of response variable. The two options are `c("binary","continuous")`. It defaults to `"continuous"`. If the user does not provide either of the two expected responses, the function returns an error.
+
+The function returns a list `B.coefs` with a coefficient value for each predictor.
+
+## Example ##
+
+We start with the leukemia data set. No `lambda` value is provided and `q1` and `q2` remain the default values.
+
+```{r, message=FALSE}
+X <- dat[,2:ncol(dat)]
+Y <- dat[,1]
+
+fit <- extended.randomlasso(X,Y,ytype="binary")
+nonzero.c <- length(fit$B.coefs[fit$B.coefs != 0])
+paste("There are",nonzero.c,"nonzero coefficients")
+```
+The number of nonzero coefficients is once again much smaller than the number of predictors.
+
+We return to the randomly generated data. This time we provide a q1 and q2 value. 
 
 
+```{r, message=FALSE}
+dd <- create.regr.data(72,3751)$Data
+X2 <- dd[,1:(ncol(dd)-1)]
+Y2 <- dd[,c(ncol(dd))]
 
+fit <- extended.randomlasso(X2,Y2,q1=10,q2=5,ytype="continuous")
+nonzero.c <- length(fit$B.coefs[fit$B.coefs != 0])
+paste("There are",nonzero.c,"nonzero coefficients")
+```
+Here we see that the smaller q values also influence the number of nonzero coefficients.
+
+# Auxiliary functions and data

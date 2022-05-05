@@ -92,6 +92,22 @@ As expected, the fitted coefficients are close to the true coefficients `B0`, `B
 
 # Ridge Regression
 
+In linear regression, the coefficients are determined by minimizing the residual sum of squares. That is, it finds a vector $\hat{\beta}$ that minimizes: $$ RSS = \sum_{i=1}^n(y_i-\beta_0-\sum_{j=1}^p\beta_jx_{ij})^2 $$
+Ridge regression extends this by adding a non-negative tuning parameter $\lambda$ that is added to each non-intercept coefficient in $\hat{\beta}$. Ridge regression therefore minimizes: $$ RSS + \lambda\sum_{j=1}^p\beta_j^2 $$ As $\lambda$ goes to 0, ridge regression becomes normal linear regression. As $\lambda$ goes to positive infinity, the $\hat{\beta}$ coefficients approach 0. The advantage of ridge regression is that it reduces variance, but this is done by slightly increasing *bias$ in the model. 
+
+A ridge regression model can be fit using the function `extended.ridge()`. This function is a wrapper for the function `glmnet::glmnet()` with the argument `alpha=0` hard coded in. The `alpha` parameter for `glmnet::glmnet()` indicates the type of penalty to be used in the model. `0` is the ridge penalty. Like `extended.lm()` and `extended.glm()`, `extended.ridge()` takes separate inputs for the predictors and responses. `X` is an $n\times p$ matrix where $n$ is the number of observations and $p$ is the number of predictors. `Y` is a vector of length $n$ of either binary or continuous response values.
+
+`extended.ridge()` also can take a user provided `lambda` value. By default this variable is set to `NULL`. If a `lambda` value is not provided, `extended.ridge()` automatically determines a value using ``glmnet::cv.glmnet(alpha=0,nfolds=5)`. The final argument to `extended.ridge()` is `ytype`. The possible forms of this argument are `"continuous"` and `"binary"`. The default argument is `continuous`. 
+
+## Example ##
+
+For this example we will use the leukemia gene dataset from [http://www.ams.sunysb.edu/~pfkuan/Teaching/AMS597/Data/leukemiaDataSet.txt](http://www.ams.sunysb.edu/~pfkuan/Teaching/AMS597/Data/leukemiaDataSet.txt). This is saved as a part of the `extendedglmGroup7` package as `dat`.
+
+```{r}
+
+```
+
+
 # Lasso Regression
 
 # Random Lasso Regression
